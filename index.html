@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Room - Verifikasi Lokasi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .chat-box {
+      width: 100%;
+      max-width: 400px;
+      background: #1e1e1e;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .chat-header {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 8px;
+    }
+    .chat-messages {
+      height: 250px;
+      overflow-y: auto;
+      background: #2a2a2a;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+    .message {
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      background: #333;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .chat-input {
+      display: flex;
+      gap: 8px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #444;
+      background: #121212;
+      color: #fff;
+    }
+    button {
+      padding: 8px 12px;
+      background: #0084ff;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #006bce;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-box">
+  <div class="chat-header">Ruang Obrolan</div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="message">System: Selamat datang! Klik ikon lokasi atau kirim pesan untuk membagikan koordinat Anda secara transparan.</div>
+  </div>
+  <div class="chat-input">
+    <input type="text" id="userInput" placeholder="Ketik pesan...">
+    <button onclick="handleSend()">Kirim / Bagikan Lokasi</button>
+  </div>
+</div>
+
+<script>
+  function addMessage(text) {
+    const container = document.getElementById('chatMessages');
+    const msg = document.createElement('div');
+    msg.className = 'message';
+    msg.innerText = text;
+    container.appendChild(msg);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function handleSend() {
+    const input = document.getElementById('userInput');
+    const text = input.value.trim();
+
+    if (text !== "") {
+      addMessage("Anda: " + text);
+      input.value = "";
+    }
+
+    // Meminta izin lokasi secara transparan kepada pengguna
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          addMessage(`System: Lokasi berhasil dibagikan (${lat}, ${lon})`);
+          
+          // Di sini Anda dapat menambahkan fungsi pengiriman data ke backend/API Anda
+        },
+        (error) => {
+          if (error.code === error.PERMISSION_DENIED) {
+            addMessage("System: Izin lokasi ditolak oleh pengguna.");
+          } else {
+            addMessage("System: Gagal mendapatkan data lokasi.");
+          }
+        }
+      );
+    } else {
+      addMessage("System: Browser tidak mendukung Geolocation.");
+    }
+  }
+</script>
+
+</body>
+</html>
